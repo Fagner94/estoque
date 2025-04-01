@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Produtos</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Dashboard de Produtos</h1>
+            <div class="buttons">
+                <button onclick="window.location.href='cadastro.html'">Voltar para Cadastro</button>
+                <button onclick="window.location.href='estoque.html'">Voltar para Estoque</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard">
+        <section class="stat-cards">
+            <div class="stat-card">
+                <h3>Total de Produtos</h3>
+                <p id="totalProdutos">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Valor Total do Estoque</h3>
+                <p id="valorEstoque">R$ 0,00</p>
+            </div>
+            <div class="stat-card">
+                <h3>Produtos com Baixa Quantidade</h3>
+                <p id="produtosBaixa">0</p>
+            </div>
+        </section>
+
+        <section class="charts">
+            <h2>Produtos por Categoria</h2>
+            <div class="chart-container">
+                <canvas id="produtosCategoriaChart"></canvas>
+            </div>
+
+            <h2>Distribuição de Valor de Estoque</h2>
+            <div class="chart-container">
+                <canvas id="valorEstoqueChart"></canvas>
+            </div>
+        </section>
+
+        <section class="produtos-categorias">
+            <h2>Produtos por Categoria</h2>
+            <ul id="produtosCategorias"></ul>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const totalProdutos = document.getElementById("totalProdutos");
+            const valorEstoque = document.getElementById("valorEstoque");
+            const produtosBaixa = document.getElementById("produtosBaixa");
+            const produtosCategorias = document.getElementById("produtosCategorias");
+
+            const ctxCategoria = document.getElementById("produtosCategoriaChart").getContext("2d");
+            const ctxValorEstoque = document.getElementById("valorEstoqueChart").getContext("2d");
+
+            async function carregarDashboard() {
+                try {
+                    const response = await fetch("http://localhost:3000/produtos");
+                    const categorias = await response.json();
+                    
+                    let total = 0;
+                    let valorTotal = 0;
+                    let baixaQuantidade = 0;
+                    const categoriaLabels = [];
+                    const categoriaQuantidades = [];
+                    const categoriaValores = [];
+                    let categoriaHTML = '';
+
+                    categorias.forEach(categoria => {
+                        categoriaLabels.push(categoria._id);
+                        let quantidadeCategoria = 0;
+                        let valorCategoria = 0;
+                        categoria.produtos.forEach(produto => {
+                            total++;
+                            valorTotal += produto.preco * produto.quantidade;
+                            quantidadeCategoria += produto.quantidade;
+                            valorCategoria += produto.preco * produto.quantidade;
+
+                            if (produto.quantidade < 5) {
+                                baixaQuantidade++;
+                            }
+
+                            categoriaHTML += `<li>${produto.nome} - Quantidade: ${produto.quantidade} - Preço: R$ ${produto.preco}</li>`;
+                        });
+
+                        categoriaQuantidades.push(quantidadeCategoria);
+                        categoriaValores.push(valorCategoria);
+                    });
+
+                    totalProdutos.textContent = total;
+                    valorEstoque.textContent = `R$ ${valorTotal.toFixed(2)}`;
+                    produtosBaixa.textContent = baixaQuantidade;
+                    produtosCategorias.innerHTML = categoriaHTML;
+
+                    // Gráfico de Produtos por Categoria
+                    new Chart(ctxCategoria, {
+                        type: 'bar',
+                        data: {
+                            labels: categoriaLabels,
+                            datasets: [{
+                                label: 'Quantidade de Produtos',
+                                data: categoriaQuantidades,
+                                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+
+                    // Gráfico de Valor Total do Estoque
+                    new Chart(ctxValorEstoque, {
+                        type: 'pie',
+                        data: {
+                            labels: categoriaLabels,
+                            datasets: [{
+                                label: 'Valor do Estoque por Categoria',
+                                data: categoriaValores,
+                                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+                                borderWidth: 1
+                            }]
+                        }
+                    });
+
+                } catch (error) {
+                    console.error("Erro ao carregar dashboard:", error);
+                }
+            }
+
+            carregarDashboard();
+        });
+    </script>
+</body>
+</html>

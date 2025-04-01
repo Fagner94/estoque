@@ -1,0 +1,136 @@
+/* Estilo geral */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    color: #333;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Container */
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+    overflow: auto; /* Adicionando o overflow */
+}
+
+.container:hover {
+    transform: scale(1.02);
+}
+
+/* Título */
+h1 {
+    font-size: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #ff5e62;
+    text-shadow: 0 0 10px rgba(255, 94, 98, 0.5);
+    animation: glow 1.5s infinite alternate;
+}
+
+/* Efeito de brilho no título */
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px rgba(255, 94, 98, 0.5);
+    }
+    to {
+        text-shadow: 0 0 20px rgba(255, 94, 98, 0.8);
+    }
+}
+
+/* Lista de produtos */
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+/* Categorias */
+.categoria-container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Produtos */
+li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    transition: background 0.2s ease-in-out;
+}
+
+li:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Botões com efeito neon */
+button, .btn-excluir {
+    background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    box-shadow: 0 0 10px rgba(255, 94, 98, 0.5);
+}
+
+button:hover, .btn-excluir:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 94, 98, 0.8);
+}
+
+button:active, .btn-excluir:active {
+    transform: scale(0.95);
+}
+
+/* Efeito de inicialização */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.container, h1, ul, button {
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Responsivo para telas menores */
+/* Responsivo para telas menores */
+@media (max-width: 768px) {
+    .container {
+        width: 90%;  /* Ajusta a largura do contêiner */
+    }
+
+    li {
+        font-size: 0.9rem;  /* Reduz o tamanho da fonte */
+        padding: 10px;      /* Ajusta o padding para maior espaço */
+    }
+
+    h1 {
+        font-size: 1.5rem;  /* Reduz o tamanho da fonte do título */
+    }
+
+    button, .btn-excluir {
+        padding: 10px 20px;  /* Ajusta o padding dos botões */
+        font-size: 0.9rem;    /* Reduz o tamanho da fonte */
+    }
+}

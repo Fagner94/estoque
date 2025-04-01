@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Produtos</title>
+    <link rel="stylesheet" href="estoque.css">
+</head>
+<body>
+    <div id="listaProdutos"></div>
+
+    <!-- Botões de navegação -->
+    <div class="buttons">
+        <button id="btnVoltarCadastro">Voltar para Cadastro</button>
+        <button id="btnIrDashboard">Ir para Dashboard</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const listaProdutos = document.getElementById("listaProdutos");
+            const btnVoltarCadastro = document.getElementById("btnVoltarCadastro");
+            const btnIrDashboard = document.getElementById("btnIrDashboard");
+
+            async function carregarProdutos() {
+                try {
+                    const response = await fetch("http://localhost:3000/produtos");
+                    const categorias = await response.json();
+                    listaProdutos.innerHTML = ""; 
+
+                    categorias.forEach(categoria => {
+                        const categoriaDiv = document.createElement("div");
+                        categoriaDiv.classList.add("categoria-container");
+
+                        const categoriaTitulo = document.createElement("h2");
+                        categoriaTitulo.textContent = categoria._id;
+
+                        const btnExcluirCategoria = document.createElement("button");
+                        btnExcluirCategoria.textContent = "Excluir Categoria";
+                        btnExcluirCategoria.classList.add("btn-excluir");
+                        btnExcluirCategoria.addEventListener("click", () => excluirCategoria(categoria._id));
+
+                        categoriaDiv.appendChild(categoriaTitulo);
+                        categoriaDiv.appendChild(btnExcluirCategoria);
+                        listaProdutos.appendChild(categoriaDiv);
+
+                        const ul = document.createElement("ul");
+                        categoria.produtos.forEach(produto => {
+                            const li = document.createElement("li");
+                            li.textContent = `Nome: ${produto.nome} | Código: ${produto.codigo} | Quantidade: `;
+
+                            const quantidadeSpan = document.createElement("span");
+                            quantidadeSpan.id = `quantidade-${produto._id}`;
+                            quantidadeSpan.textContent = produto.quantidade;
+
+                            const precoSpan = document.createElement("span");
+                            precoSpan.textContent = ` | Preço: R$ ${produto.preco.toFixed(2)}`;
+
+                            li.appendChild(quantidadeSpan);
+                            li.appendChild(precoSpan);
+
+                            // Botões para alterar a quantidade
+                            const btnDiminuir = document.createElement("button");
+                            btnDiminuir.textContent = "-";
+                            btnDiminuir.classList.add("btn-alterar");
+                            btnDiminuir.addEventListener("click", () => alterarQuantidade(produto._id, -1));
+
+                            const btnAumentar = document.createElement("button");
+                            btnAumentar.textContent = "+";
+                            btnAumentar.classList.add("btn-alterar");
+                            btnAumentar.addEventListener("click", () => alterarQuantidade(produto._id, 1));
+
+                            const btnExcluir = document.createElement("button");
+                            btnExcluir.textContent = "Excluir";
+                            btnExcluir.classList.add("btn-excluir");
+                            btnExcluir.addEventListener("click", () => excluirProduto(produto._id));
+
+                            li.appendChild(btnDiminuir);
+                            li.appendChild(btnAumentar);
+                            li.appendChild(btnExcluir);
+                            ul.appendChild(li);
+                        });
+
+                        listaProdutos.appendChild(ul);
+                    });
+                } catch (error) {
+                    console.error("Erro ao carregar produtos:", error);
+                    listaProdutos.innerHTML = "<li>Erro ao carregar os produtos.</li>";
+                }
+            }
+
+            // Redirecionamento para Cadastro e Dashboard
+            btnVoltarCadastro.addEventListener("click", () => {
+                window.location.href = "cadastro.html"; 
+            });
+
+            btnIrDashboard.addEventListener("click", () => {
+                window.location.href = "dashboard.html"; 
+            });
+
+            async function excluirProduto(id) {
+                try {
+                    const response = await fetch(`http://localhost:3000/produtos/${id}`, { method: "DELETE" });
+                    if (response.ok) {
+                        alert("Produto excluído com sucesso!");
+                        carregarProdutos();
+                    } else {
+                        alert("Erro ao excluir produto.");
+                    }
+                } catch (error) {
+                    console.error("Erro ao excluir produto:", error);
+                    alert("Erro ao excluir produto.");
+                }
+            }
+
+            async function excluirCategoria(categoria) {
+                try {
+                    const response = await fetch(`http://localhost:3000/produtos/categoria/${categoria}`, { method: "DELETE" });
+                    if (response.ok) {
+                        alert("Categoria excluída com sucesso!");
+                        carregarProdutos();
+                    } else {
+                        alert("Erro ao excluir categoria.");
+                    }
+                } catch (error) {
+                    console.error("Erro ao excluir categoria:", error);
+                    alert("Erro ao excluir categoria.");
+                }
+            }
+
+            async function alterarQuantidade(id, valor) {
+                try {
+                    const url = valor > 0 ? `/produtos/aumentar/${id}` : `/produtos/diminuir/${id}`;
+                    const response = await fetch(`http://localhost:3000${url}`, { method: 'PATCH' });
+
+                    if (response.ok) {
+                        const produtoAtualizado = await response.json();
+                        document.getElementById(`quantidade-${id}`).textContent = produtoAtualizado.quantidade;
+                    } else {
+                        alert("Erro ao atualizar quantidade");
+                    }
+                } catch (error) {
+                    console.error("Erro ao alterar quantidade:", error);
+                    alert("Erro ao alterar quantidade.");
+                }
+            }
+
+            carregarProdutos();
+        });
+    </script>
+</body>
+</html>
