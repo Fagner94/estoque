@@ -17,6 +17,9 @@ mongoose.connect('mongodb+srv://fagner:160294vasco@cluster0.rx756z0.mongodb.net/
 app.use(cors());
 app.use(express.json());
 
+// Servir arquivos estáticos da pasta "public"
+app.use(express.static('public'));
+
 // Rota de teste
 app.get('/', (req, res) => {
   res.send('Servidor rodando');
