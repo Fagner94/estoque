@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000; // Usa a porta definida pelo Render ou 3000 localmente
+
 
 // Importar modelo de produto
 const Produto = require('./models/Produto');
