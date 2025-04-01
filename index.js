@@ -10,7 +10,7 @@ const port = process.env.PORT || 3000; // Usa a porta definida pelo Render ou 30
 const Produto = require('./models/Produto');
 
 // Conectar ao MongoDB Atlas
-mongoose.connect('mongodb+srv://fagner:160294vasco@cluster0.rx756z0.mongodb.net/estoque')
+mongoose.connect('mongodb+srv://fagner:160294vasco@cluster0.rx756z0.mongodb.net/estoque?retryWrites=true&w=majority')
   .then(() => console.log('Conectado ao MongoDB Atlas'))
   .catch((err) => console.error('Erro ao conectar ao MongoDB:', err));
 
